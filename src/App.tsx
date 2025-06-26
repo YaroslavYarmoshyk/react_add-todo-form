@@ -1,14 +1,40 @@
 import './App.scss';
+import { TodoList } from './components/TodoList';
+import React, { useState } from 'react';
 
 // import usersFromServer from './api/users';
-// import todosFromServer from './api/todos';
+import todosFromServer from './api/todos';
+import { TodoItem } from './types/TodoItem';
+import { getNextTodoId } from './service/TodosService';
 
 export const App = () => {
+  const [todos, setTodos] = useState<TodoItem[]>(todosFromServer);
+  const [title, setTitle] = useState('');
+  const [userId, setUserId] = useState(0);
+
+  const addTodo = (todo: TodoItem) => {
+    setTodos(currentTodos => [...currentTodos, todo]);
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    addTodo({
+      id: getNextTodoId(),
+      title: title,
+      completed: false,
+      userId: userId,
+    });
+
+    setTitle('');
+    setUserId(0);
+  };
+
   return (
     <div className="App">
       <h1>Add todo form</h1>
 
-      <form action="/api/todos" method="POST">
+      <form action="/api/todos" method="POST" onSubmit={handleSubmit}>
         <div className="field">
           <input type="text" data-cy="titleInput" />
           <span className="error">Please enter a title</span>
@@ -29,33 +55,7 @@ export const App = () => {
         </button>
       </form>
 
-      <section className="TodoList">
-        <article data-id="1" className="TodoInfo TodoInfo--completed">
-          <h2 className="TodoInfo__title">delectus aut autem</h2>
-
-          <a className="UserInfo" href="mailto:Sincere@april.biz">
-            Leanne Graham
-          </a>
-        </article>
-
-        <article data-id="15" className="TodoInfo TodoInfo--completed">
-          <h2 className="TodoInfo__title">delectus aut autem</h2>
-
-          <a className="UserInfo" href="mailto:Sincere@april.biz">
-            Leanne Graham
-          </a>
-        </article>
-
-        <article data-id="2" className="TodoInfo">
-          <h2 className="TodoInfo__title">
-            quis ut nam facilis et officia qui
-          </h2>
-
-          <a className="UserInfo" href="mailto:Julianne.OConner@kory.org">
-            Patricia Lebsack
-          </a>
-        </article>
-      </section>
+      <TodoList todos={todos} />
     </div>
   );
 };
