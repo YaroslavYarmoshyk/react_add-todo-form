@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import usersFromServer from './api/users';
 import todosFromServer from './api/todos';
 import { TodoItem } from './types/TodoItem';
-import { getNextTodoId } from './service/TodosService';
 
 export const App = () => {
   const [todos, setTodos] = useState<TodoItem[]>(todosFromServer);
@@ -13,6 +12,12 @@ export const App = () => {
   const [hasTitleError, setHasTitleError] = useState(false);
   const [userId, setUserId] = useState(0);
   const [hasUserIdError, setHasUserIdError] = useState(false);
+
+  function getNextTodoId(): number {
+    const maxId = Math.max(...todos.map((todo: TodoItem) => todo.id));
+
+    return maxId + 1;
+  }
 
   const addTodo = (todo: TodoItem) => {
     setTodos(currentTodos => [...currentTodos, todo]);
